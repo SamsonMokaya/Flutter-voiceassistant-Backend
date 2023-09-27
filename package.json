@@ -1,0 +1,24 @@
+{
+  "name": "healthassistantbackend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
+    "googleapis": "^126.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.5.3",
+    "nodemailer": "^6.9.5"
+  }
+}
