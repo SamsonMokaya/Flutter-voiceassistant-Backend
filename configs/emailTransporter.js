@@ -1,8 +1,7 @@
-const client = require('twilio')( process.env.TWILIOID,  process.env.TWILIOTOKEN);
 const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
 const OAuth2 = google.auth.OAuth2;
-const sendEmail = require("../configs/sendEmail")
+
 
 const createTransporter = async () => {
     const oauth2Client = new OAuth2(

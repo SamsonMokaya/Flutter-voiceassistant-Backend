@@ -2,8 +2,13 @@ const UserModel = require("../models/userModel");
 const OtpModel = require("../models/emailOtpModel");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
+const sendEmail = require("../configs/sendEmail")
+const jwt = require('jsonwebtoken');
 
 
+// Sign up user
+// @route POST /api/user/signup
+// @access public
 const signUpUser = asyncHandler(async (req, res) => {
 
     try{
@@ -51,36 +56,23 @@ const signUpUser = asyncHandler(async (req, res) => {
 // @route POST /api/user/sendEmailOTP
 // @access public
 const sendEmailOTP = async (req, res, next) => {
+    const { email } = req.body;
 
-        const { email } = req.body;
+    if (!email) {
+        return res.status(400).json({ error: 'Email is mandatory' });
+    }
 
-        if ( !email ) {
-            return res.status(400).json({ error: 'All fields are mandatory' });
-        }
+    try {
+        const userExists = await UserModel.findOne({ email });
 
-        const userExists = await UserModel.findOne({ email }) 
-
-
-        if (user.rows.length === 0) {
+        if (!userExists) {
             return res.status(404).json({ error: 'Email not found' });
         }
 
-        if (!user.rows[0].verified) {
-            return res.status(400).json({ error: 'User is not yet verified' });
-        }
-
-
-
         let digits = "0123456789";
-
         const OTP = Array.from({ length: 6 }, () => digits[Math.floor(Math.random() * 10)]).join('');
-
         const expiryDate = new Date();
-        expiryDate.setMinutes(expiryDate.getMinutes() + 30); 
-
-
-
-    try{
+        expiryDate.setMinutes(expiryDate.getMinutes() + 30);
 
         const success = await sendEmail({
             subject: "One time OTP - Ki-journey",
@@ -92,61 +84,61 @@ const sendEmailOTP = async (req, res, next) => {
             from: process.env.GOOGLE_EMAIL
         });
 
-        if(success){
+        if (success) {
             // Store OTP and expiry date in the database
             const otpResult = await OtpModel.create({
                 email: email,
                 otp: OTP,
                 expiry: expiryDate,
             });
-            if(otpResult){
-                return res.status(200).json({ message: `OTP send to ${email} successfully` });
-            }else{
-                return res.status(200).json({ message: "There was an error saving the otp" });
+
+            if (otpResult) {
+                return res.status(200).json({ message: `OTP sent to ${email} successfully` });
+            } else {
+                return res.status(500).json({ error: "There was an error saving the OTP" });
             }
-            
-        }else{
-            return res.status(500).json({ error: 'An error occured while sending the email' });
-        }  
-    }catch(error){
+        } else {
+            return res.status(500).json({ error: 'An error occurred while sending the email' });
+        }
+    } catch (error) {
         return res.status(500).json({ message: error.message });
     }
-
 }
 
 
 
+//verifies the otp sent
 const verifyEmailOTP = async (email, otp) => {
+
     if (!otp || !email) {
         return { status: 400, message: 'All fields are mandatory' };
     }
 
     try {
-        const user = await pool.query('SELECT * FROM "USER" WHERE email = $1', [email]);
+        const user = await UserModel.findOne({ email });
 
-        if (user.rows.length === 0) {
+        if (!user) {
             return { status: 404, message: 'Email not found' };
         }
 
-    const otpResult = await pool.query('SELECT * FROM "OTP_EMAIL_CODES" WHERE user_id = $1 ORDER BY id DESC LIMIT 1', [user.rows[0].id]);
+        const otpResult = await OtpModel.findOne({ email: user.email }, {}, { sort: { 'expiry': -1 } });
 
-    if (otpResult.rows.length === 0 || otpResult.rows[0].otp_code !== otp) {
-        return { status: 400, message: 'Invalid OTP' };
-    }
+        if (!otpResult || otpResult.otp !== otp) {
+            return { status: 400, message: 'Invalid OTP' };
+        }
 
-    const expiryDate = new Date(otpResult.rows[0].expiry_date);
-    const currentDate = new Date();
+        const currentDate = new Date();
 
-    if (currentDate > expiryDate) {
-        return { status: 400, message: 'OTP has expired' };
-    }
+        if (currentDate > otpResult.expiry) {
+            return { status: 400, message: 'OTP has expired' };
+        }
 
-    return { status: 200, message: 'User OTP is correct' };
-
+        return { status: 200, message: 'User OTP is correct' };
     } catch (error) {
         return { status: 500, message: error.message };
     }
 };
+
 
 
 
@@ -161,15 +153,17 @@ const signInUser = async (req, res, next) => {
     }
 
     try {
-        
-        //check if user exists
+        // Check if user exists
         const user = await UserModel.findOne({ email });
 
-        if (user.rows.length === 0) {
+        if (!user) {
             return res.status(404).json({ error: 'Email not found' });
         }
 
-        if (!user || !(await bcrypt.compare(password, user.password))) {
+        // Verify password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
@@ -179,8 +173,8 @@ const signInUser = async (req, res, next) => {
 
             if (verificationResult.status === 200) {
                 const accessToken = jwt.sign(
-                    { id: user.rows[0].id, name: user.rows[0].name, email: user.rows[0].email },
-                    process.env.ACCESS_TOKEN_SECRET,
+                    { id: user._id, name: user.name, email: user.email },
+                    process.env.JWT_SECRET,
                     { expiresIn: '15m' }
                 );
                 return res.status(200).json({ accessToken });
@@ -188,13 +182,14 @@ const signInUser = async (req, res, next) => {
                 return res.status(verificationResult.status).json({ error: verificationResult.message });
             }
         } catch (error) {
-            return res.status(verificationResult.status).json({ error: error.message });
+            return res.status(500).json({ error: error.message });
         }
       
     } catch (error) {
-        return res.status(500).json({error: error.message}) // Pass the error to the error handling middleware
+        return res.status(500).json({ error: error.message });
     }
 };
 
 
-module.exports = {signUpUser, signInUser, }
+
+module.exports = {signUpUser, sendEmailOTP, signInUser, }
