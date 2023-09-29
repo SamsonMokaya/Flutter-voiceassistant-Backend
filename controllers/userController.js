@@ -75,9 +75,9 @@ const sendEmailOTP = async (req, res, next) => {
         expiryDate.setMinutes(expiryDate.getMinutes() + 30);
 
         const success = await sendEmail({
-            subject: "One time OTP - Ki-journey",
+            subject: "One time OTP - Health AI assistant",
             html: `
-                <h3>Welcome back to Ki-journey!</h3>
+                <h3>Welcome back to Health AI assistant!</h3>
                 <p>Here is your one time otp: ${OTP}</p>
             `,
             to: email,
@@ -175,7 +175,7 @@ const signInUser = async (req, res, next) => {
                 const accessToken = jwt.sign(
                     { id: user._id, name: user.name, email: user.email },
                     process.env.JWT_SECRET,
-                    { expiresIn: '15m' }
+                    { expiresIn: '30m' }
                 );
                 return res.status(200).json({ accessToken });
             } else {
