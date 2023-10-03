@@ -8,6 +8,7 @@ const {
   signInUser,
   updateUserProfile,
   deleteUserProfile,
+  currentUser,
 } = require("../controllers/userController");
 
 router
