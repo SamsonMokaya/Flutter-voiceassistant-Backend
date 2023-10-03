@@ -17,6 +17,6 @@ router
   .post("/otp", sendEmailOTP)
   .put("", validateToken,updateUserProfile)
   .get("", validateToken,currentUser)
-  .delete("/user/", validateToken, deleteUserProfile);
+  .delete("", validateToken, deleteUserProfile);
 
 module.exports = router;
