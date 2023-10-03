@@ -267,7 +267,21 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
 // @route GET /api/user/
 // @access private
 const currentUser = (req, res) => {
-    res.json(req.user);
+   try {
+    const userId = req.user.id;
+
+    // Fetch user data from the database
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Send the user data as response
+    return res.json(user);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
   };
 
 module.exports = {
