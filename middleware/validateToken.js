@@ -8,7 +8,7 @@ const validateToken = asyncHandler(async (req, res, next) => {
     token = authHeader.split(" ")[1];
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err) {
-        next(err); // Pass the error to the error handling middleware
+        res.status(401).json({ error: err.message }); 
       } else {
         req.user = decoded;
         next(); // Call next to pass control to the next route handler
