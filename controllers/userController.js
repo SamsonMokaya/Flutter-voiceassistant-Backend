@@ -210,7 +210,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 
   try {
     // Check if user exists
-    const user = await UserModel.findById(userId);
+    const user = await UserModel.findById(req.user.id);
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
