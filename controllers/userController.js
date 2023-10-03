@@ -266,7 +266,7 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
 // Show current user
 // @route GET /api/user/
 // @access private
-const currentUser = (req, res) => {
+const currentUser = asyncHandler(async (req, res) => {
    try {
     const userId = req.user.id;
 
@@ -282,7 +282,7 @@ const currentUser = (req, res) => {
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
-  };
+});
 
 module.exports = {
   signUpUser,
