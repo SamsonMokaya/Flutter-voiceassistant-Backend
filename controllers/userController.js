@@ -236,7 +236,8 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 // @route DELETE /api/user/:userId
 // @access private
 const deleteUserProfile = asyncHandler(async (req, res) => {
-  const {userID} = req.body;
+  
+  const userId = req.user.id
 
   if (!userId) {
     return res.status(400).json({ error: "User ID is required" });
