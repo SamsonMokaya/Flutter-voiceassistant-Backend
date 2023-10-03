@@ -202,9 +202,9 @@ const signInUser = async (req, res, next) => {
 // @route PUT /api/user/
 // @access private
 const updateUserProfile = asyncHandler(async (req, res) => {
-  const { userId, firstName, lastName, email } = req.body;
+  const { firstName, lastName, email, password } = req.body;
 
-  if (!userId || !firstName || !lastName || !email) {
+  if ( !firstName || !lastName || !email || !password) {
     return res.status(400).json({ error: "All fields are mandatory" });
   }
 
@@ -216,10 +216,13 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     // Update user data
     user.firstName = firstName;
     user.lastName = lastName;
     user.email = email;
+    user.password = hashedPassword;
 
     // Save the updated user
     await user.save();
