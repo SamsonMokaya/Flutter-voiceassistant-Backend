@@ -1,7 +1,6 @@
 const dotenv = require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-const validateToken = require("./middleware/validateToken")
 
 const app = express();
 
@@ -20,5 +19,5 @@ mongoose
     console.log("Server running on port " + process.env.PORT);
   })
   .catch((err) => {
-    console.log(err);
+    console.log(err.message);
   });
