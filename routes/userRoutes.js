@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const validateToken = require("./middleware/validateToken")
 
 const {
   signUpUser,
@@ -13,7 +14,7 @@ router
   .post("/signup", signUpUser)
   .post("/signin", signInUser)
   .post("/otp", sendEmailOTP)
-  .put("/user", updateUserProfile)
-  .delete("/user/:userId", deleteUserProfile);
+  .put("/user", validateToken,updateUserProfile)
+  .delete("/user/:userId", validateToken, deleteUserProfile);
 
 module.exports = router;
