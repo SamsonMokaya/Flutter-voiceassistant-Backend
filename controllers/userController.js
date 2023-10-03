@@ -252,7 +252,7 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
     }
 
     // Delete the user
-    await user.remove();
+    await UserModel.findByIdAndDelete(userId);
 
     return res
       .status(200)
