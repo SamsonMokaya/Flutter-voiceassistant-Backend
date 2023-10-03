@@ -229,7 +229,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 
     return res
       .status(200)
-      .json({ message: "User profile updated successfully" });
+      .json({ message: "User profile updated successfully", data: user });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
