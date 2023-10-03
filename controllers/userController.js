@@ -176,7 +176,15 @@ const signInUser = async (req, res, next) => {
           process.env.JWT_SECRET,
           { expiresIn: "30m" }
         );
-        return res.status(200).json({ id: user._id, token: accessToken });
+        
+        const userData = {
+            userId: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+          };
+
+        return res.status(200).json({ data: userData, token: accessToken });
       } else {
         return res
           .status(verificationResult.status)
@@ -253,10 +261,19 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
+
+// Show current user
+// @route GET /api/user/
+// @access private
+const currentUser = (req, res) => {
+    res.json(req.user);
+  };
+
 module.exports = {
   signUpUser,
   sendEmailOTP,
   signInUser,
   updateUserProfile,
   deleteUserProfile,
+  currentUser,
 };
