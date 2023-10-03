@@ -14,7 +14,7 @@ router
   .post("/signup", signUpUser)
   .post("/signin", signInUser)
   .post("/otp", sendEmailOTP)
-  .put("/user", validateToken,updateUserProfile)
+  .put("", validateToken,updateUserProfile)
   .delete("/user/:userId", validateToken, deleteUserProfile);
 
 module.exports = router;
