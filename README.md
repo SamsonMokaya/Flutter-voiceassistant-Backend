@@ -49,3 +49,17 @@ To run the server, use the command: `npm start`
 - `mongoose`: MongoDB object modeling tool.
 - `bcrypt`: Password hashing library.
 - `jsonwebtoken`: Token-based authentication library.
+
+
+
+
+PORT = 5000
+DBPASSWORD = Fresh@123
+ACCESS_TOKEN_SECRET = LETTHECHILDRENMOVE
+TWILIOID = ACc3e6e2e279d99ec66deaee86d56bdadf
+TWILIOTOKEN = 2301b65f58439a83c091ae2fe445cb59
+GOOGLE_CLIENT_SECRET = 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
+GOOGLE_CLIENT_ID = 601316748573-162gqo5s1jetefma15mlbeob6k1jg0gp.apps.googleusercontent.com
+GOOGLE_EMAIL = mokayasamson950@gmail.com
+REFRESH_TOKEN = 1//04zU1uar4Pq6ECgYIARAAGAQSNwF-L9IrRq1ixCvXliBmKknd4tEOHKe9TJ4l4OnX1MP9Nm6nXpEanmIaGDxwfk_V0XDxFNTK5ak
+ACCESS_TOKEN = ya29.a0AfB_byAXMQ3QEmmfZpao1XdTYPUI3WObJNL-Li-Vr--VeH14jyLSwMDDmurriI8g7co4wEMxzOmaVhSEydelNXHXieqfOYC40S7ReuW9NgtCA5Rwb6V2R8WzOmTCInoxLo6l0ZRrUraoeJIBZG-1qho5oHzz2LlBntUyaCgYKAQYSARASFQGOcNnCZutAD3hFqaYlTqAvzhUWeg0171
