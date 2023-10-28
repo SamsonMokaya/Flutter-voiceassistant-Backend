@@ -16,8 +16,9 @@ const createTransporter = async () => {
 
     const accessToken = await new Promise((resolve, reject) => {
         oauth2Client.getAccessToken((err, token) => {
+
           if (err) {
-            reject("Failed to create access token :(");
+            reject("Failed to create access token :(" + err.message);
           }
           resolve(token);
         });
@@ -29,7 +30,7 @@ const createTransporter = async () => {
         auth: {
             type: 'OAuth2',
             user: process.env.GOOGLE_EMAIL,
-            accessToken: process.env.GOOGLE_EMAIL,
+            accessToken: accessToken,
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
             refreshToken: process.env.REFRESH_TOKEN   
