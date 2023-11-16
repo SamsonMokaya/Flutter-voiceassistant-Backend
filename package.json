@@ -22,6 +22,7 @@
     "googleapis": "^126.0.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.5.3",
-    "nodemailer": "^6.9.5"
+    "nodemailer": "^6.9.5",
+    "string-similarity": "^4.0.4"
   }
 }

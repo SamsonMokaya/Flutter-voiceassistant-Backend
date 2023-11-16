@@ -9,14 +9,12 @@ const {
   updateUserProfile,
   deleteUserProfile,
   currentUser,
-  getSymptoms,
 } = require("../controllers/userController");
 
 router
   .post("/signup", signUpUser)
   .post("/signin", signInUser)
   .post("/otp", sendEmailOTP)
-  .post("/symptoms", getSymptoms)
   .put("", validateToken,updateUserProfile)
   .get("", validateToken,currentUser)
   .delete("", validateToken, deleteUserProfile);

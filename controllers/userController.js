@@ -295,6 +295,5 @@ module.exports = {
   signInUser,
   updateUserProfile,
   deleteUserProfile,
-  currentUser,
-  getSymptoms
+  currentUser, 
 };
