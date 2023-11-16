@@ -38,7 +38,6 @@ const createTransporter = async () => {
     });
 
     return transporter;
-
     };
 
 

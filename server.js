@@ -1,3 +1,18 @@
+const fs = require('fs');
+const csv = require('csv-parser');
+const symptomData = [];
+
+fs.createReadStream('testing.csv')
+  .pipe(csv())
+  .on('data', (row) => {
+    symptomData.push(row);
+  })
+  .on('end', () => {
+    console.log('Data loaded');
+  });
+
+// Rest of your server.js code below...
+
 const dotenv = require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");

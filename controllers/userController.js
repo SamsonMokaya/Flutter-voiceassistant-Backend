@@ -5,6 +5,8 @@ const bcrypt = require("bcrypt");
 const sendEmail = require("../configs/sendEmail");
 const jwt = require("jsonwebtoken");
 
+
+
 // Sign up user
 // @route POST /api/user/signup
 // @access public
@@ -176,13 +178,13 @@ const signInUser = async (req, res, next) => {
           process.env.JWT_SECRET,
           { expiresIn: "30m" }
         );
-        
+
         const userData = {
-            userId: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-          };
+          userId: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+        };
 
         return res.status(200).json({ data: userData, token: accessToken });
       } else {
@@ -204,7 +206,7 @@ const signInUser = async (req, res, next) => {
 const updateUserProfile = asyncHandler(async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
 
-  if ( !firstName || !lastName || !email || !password) {
+  if (!firstName || !lastName || !email || !password) {
     return res.status(400).json({ error: "All fields are mandatory" });
   }
 
@@ -239,8 +241,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 // @route DELETE /api/user/:userId
 // @access private
 const deleteUserProfile = asyncHandler(async (req, res) => {
-  
-  const userId = req.user.id
+  const userId = req.user.id;
 
   if (!userId) {
     return res.status(400).json({ error: "User ID is required" });
@@ -266,18 +267,19 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
 });
 
 
+
 // Show current user
 // @route GET /api/user/
 // @access private
 const currentUser = asyncHandler(async (req, res) => {
-   try {
+  try {
     const userId = req.user.id;
 
     // Fetch user data from the database
     const user = await UserModel.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     // Send the user data as response
@@ -294,4 +296,5 @@ module.exports = {
   updateUserProfile,
   deleteUserProfile,
   currentUser,
+  getSymptoms
 };
