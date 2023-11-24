@@ -13,6 +13,7 @@
   "dependencies": {
     "axios": "^1.6.0",
     "bcrypt": "^5.1.1",
+    "compromise": "^14.10.1",
     "csv-parser": "^3.0.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
@@ -22,8 +23,10 @@
     "googleapis": "^126.0.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.5.3",
+    "natural": "^6.8.0",
     "nodemailer": "^6.9.5",
     "nodemon": "^3.0.1",
+    "spacy": "^0.0.4",
     "string-similarity": "^4.0.4"
   }
 }

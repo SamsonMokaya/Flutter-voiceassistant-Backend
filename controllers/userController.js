@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const sendEmail = require("../configs/sendEmail");
 const jwt = require("jsonwebtoken");
 const stringSimilarity = require("string-similarity");
+const natural = require("natural");
 
 const symptoms = [
   "itching",
@@ -139,33 +140,62 @@ const symptoms = [
   "blister",
   "red sore around nose",
   "yellow crust ooze",
-  "prognosis",
 ];
 
 
-function extractSymptoms(text, symptoms) {
+
+const tokenizer = new natural.WordTokenizer();
+const porterStemmer = natural.PorterStemmer;
+
+function extractSymptomsWithArray(text, symptoms) {
   text = text.toLowerCase();
-  const words = text.split(" ");
+  const words = tokenizer.tokenize(text);
   const extractedSymptoms = {};
+  const symptomArray = Array(symptoms.length).fill(0);
 
   for (let symptom of symptoms) {
     symptom = symptom.toLowerCase();
-    for (let word of words) {
-      const match = stringSimilarity.findBestMatch(symptom, [word]);
-      if (match.bestMatch.rating >= 0.6) {
-        extractedSymptoms[symptom] = match.bestMatch.rating;
+    const symptomWords = tokenizer.tokenize(symptom);
+
+    for (let i = 0; i < words.length - symptomWords.length + 1; i++) {
+      const wordSubset = words.slice(i, i + symptomWords.length);
+      const wordSubsetStems = wordSubset.map((word) =>
+        porterStemmer.stem(word)
+      );
+
+      const match = stringSimilarity.findBestMatch(
+        symptomWords.join(" "),
+        wordSubsetStems
+      );
+
+      if (match.bestMatch.rating >= 0.65) {
+        // Consider the context of the words in the sentence
+        const rating = Math.min(match.bestMatch.rating, 1);
+        if (!extractedSymptoms[symptom]) {
+          extractedSymptoms[symptom] = rating;
+        } else {
+          extractedSymptoms[symptom] = Math.max(
+            extractedSymptoms[symptom],
+            rating
+          );
+        }
+        // Set the corresponding element to 1 in the array
+        symptomArray[symptoms.indexOf(symptom)] = 1;
       }
     }
   }
-  return extractedSymptoms;
+
+  return { extractedSymptoms, symptomArray };
 }
 
-console.log(
-  extractSymptoms(
-    "I have a stomach bleeding and a strong hardening ache and nausea itching and inflamation black",
-    symptoms
-  )
+const { extractedSymptoms, symptomArray } = extractSymptomsWithArray(
+  "I have a bleeding and a stomach ache and nausea itching and inflammation black pain. I have pain in my knee.",
+  symptoms
 );
+
+console.log(extractedSymptoms);
+console.log(symptomArray);
+
 
 
 // Sign up user
