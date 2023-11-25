@@ -6,14 +6,6 @@ const sendEmail = require("../configs/sendEmail");
 const jwt = require("jsonwebtoken");
 const stringSimilarity = require("string-similarity");
 const natural = require("natural");
-const tf = require("@tensorflow/tfjs-node");
-
-
-// Function to load the model
-const loadModel = async () => {
-  const modelPath = require("../health_disease");
-  return await tf.loadLayersModel(`file://${modelPath}/saved_model.pb`);
-};
 
 
 const symptoms = [
@@ -151,73 +143,55 @@ const symptoms = [
   "yellow crust ooze",
 ];
 
-
-
 const tokenizer = new natural.WordTokenizer();
 const porterStemmer = natural.PorterStemmer;
 
-const processTextAndPredict = async (text) => {
-  try {
-    // Load the TensorFlow.js model
-    const model = await loadModel();
 
-    // Symptom extraction
-    text = text.toLowerCase();
-    const words = tokenizer.tokenize(text);
-    const extractedSymptoms = {};
-    const symptomArray = Array(symptoms.length).fill(0);
 
-    for (let symptom of symptoms) {
-      symptom = symptom.toLowerCase();
-      const symptomWords = tokenizer.tokenize(symptom);
+const extractSymptoms = async (req, res) => {
+  var {text} = req.body;
+  text = text.toLowerCase();
+  const words = tokenizer.tokenize(text);
+  const extractedSymptoms = {};
+  const symptomArray = Array(symptoms.length).fill(0);
 
-      for (let i = 0; i < words.length - symptomWords.length + 1; i++) {
-        const wordSubset = words.slice(i, i + symptomWords.length);
-        const wordSubsetStems = wordSubset.map((word) =>
-          porterStemmer.stem(word)
-        );
+  for (let symptom of symptoms) {
+    symptom = symptom.toLowerCase();
+    const symptomWords = tokenizer.tokenize(symptom);
 
-        const match = stringSimilarity.findBestMatch(
-          symptomWords.join(" "),
-          wordSubsetStems
-        );
+    for (let i = 0; i < words.length - symptomWords.length + 1; i++) {
+      const wordSubset = words.slice(i, i + symptomWords.length);
+      const wordSubsetStems = wordSubset.map((word) =>
+        porterStemmer.stem(word)
+      );
 
-        if (match.bestMatch.rating >= 0.65) {
-          const rating = Math.min(match.bestMatch.rating, 1);
-          if (!extractedSymptoms[symptom]) {
-            extractedSymptoms[symptom] = rating;
-          } else {
-            extractedSymptoms[symptom] = Math.max(
-              extractedSymptoms[symptom],
-              rating
-            );
-          }
-          symptomArray[symptoms.indexOf(symptom)] = 1;
+      const match = stringSimilarity.findBestMatch(
+        symptomWords.join(" "),
+        wordSubsetStems
+      );
+
+      if (match.bestMatch.rating >= 0.65) {
+        // Consider the context of the words in the sentence
+        const rating = Math.min(match.bestMatch.rating, 1);
+        if (!extractedSymptoms[symptom]) {
+          extractedSymptoms[symptom] = rating;
+        } else {
+          extractedSymptoms[symptom] = Math.max(
+            extractedSymptoms[symptom],
+            rating
+          );
         }
+        // Set the corresponding element to 1 in the array
+        symptomArray[symptoms.indexOf(symptom)] = 1;
       }
     }
-
-    // Model prediction
-    const inputTensor = tf.tensor2d([symptomArray]);
-    const modelResult = await model.predict(inputTensor);
-
-    // Adjust the response based on your model's output format
-    // Example: const outputArray = modelResult.dataSync();
-
-    // Return the response as needed
-    return {
-      extractedSymptoms,
-      modelResult,
-    };
-  } catch (error) {
-    console.error("Error processing text and predicting:", error);
-    // Handle errors as needed
-    return { error: "An error occurred during processing" };
   }
+
+
+  return res
+    .status(200)
+    .json({ extractedSymptoms: extractedSymptoms, symptomArray: symptomArray });
 };
-
-
-
 
 // Sign up user
 // @route POST /api/user/signup
@@ -478,8 +452,6 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
-
-
 // Show current user
 // @route GET /api/user/
 // @access private
@@ -507,6 +479,6 @@ module.exports = {
   signInUser,
   updateUserProfile,
   deleteUserProfile,
-  processTextAndPredict,
-  currentUser, 
+  extractSymptoms,
+  currentUser,
 };
