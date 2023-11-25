@@ -17,7 +17,7 @@ router
   .post("/signup", signUpUser)
   .post("/signin", signInUser)
   .post("/otp", sendEmailOTP)
-  .post("/extract", extractSymptoms)  
+  .post("/extract", validateToken, extractSymptoms)  
   .put("", validateToken,updateUserProfile)
   .get("", validateToken,currentUser)
   .delete("", validateToken, deleteUserProfile);
