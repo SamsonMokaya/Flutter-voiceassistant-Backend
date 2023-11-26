@@ -9,7 +9,6 @@ const {
   updateUserProfile,
   deleteUserProfile,
   currentUser,
-  processTextAndPredict,
   extractSymptoms,
 } = require("../controllers/userController");
 
