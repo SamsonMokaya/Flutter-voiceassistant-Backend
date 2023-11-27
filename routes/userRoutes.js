@@ -16,9 +16,9 @@ router
   .post("/signup", signUpUser)
   .post("/signin", signInUser)
   .post("/otp", sendEmailOTP)
-  .post("/extract", validateToken, extractSymptoms)  
-  .put("", validateToken,updateUserProfile)
+  .post("/extract", extractSymptoms)  
+  .put("",updateUserProfile)
   .get("", validateToken,currentUser)
-  .delete("", validateToken, deleteUserProfile);
+  .delete("", deleteUserProfile);
 
 module.exports = router;
