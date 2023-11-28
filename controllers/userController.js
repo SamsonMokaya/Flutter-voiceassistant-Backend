@@ -423,9 +423,17 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     // Save the updated user
       await user.save();
 
+
+    const userData = {
+          userId: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+        };
+
       return res
         .status(200)
-        .json({ message: "User profile updated successfully", data: user });
+        .json({ message: "User profile updated successfully", data: userData });
 
     
   } catch (error) {
