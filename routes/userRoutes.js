@@ -19,6 +19,6 @@ router
   .post("/extract", extractSymptoms)  
   .put("",updateUserProfile)
   .get("", validateToken,currentUser)
-  .delete("", deleteUserProfile);
+  .post("", deleteUserProfile);
 
 module.exports = router;
