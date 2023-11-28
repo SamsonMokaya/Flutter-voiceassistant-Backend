@@ -392,7 +392,7 @@ const signInUser = async (req, res, next) => {
 const updateUserProfile = asyncHandler(async (req, res) => {
   const { firstName, lastName, email, password, userId } = req.body;
 
-  if (!firstName || !lastName || !email || userId) {
+  if (!firstName || !lastName || !email || !userId) {
     return res.status(400).json({ error: "All fields are mandatory" });
   }
 
