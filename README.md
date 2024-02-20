@@ -34,6 +34,7 @@ To run the server, use the command: `npm start`
 - `POST /api/user/signup`: Register a new user.
 - `POST /api/user/signin`: Authenticate user with email, password, and OTP.
 - `POST /api/user/otp`: Send OTP to user's email.
+- `POST /api/user/extract`: Extract symptoms to be passed to the model.
 
 ## Environment Variables
 
